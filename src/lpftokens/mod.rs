@@ -11,7 +11,7 @@ pub struct Slide {
     htmlstr: String,
 }
 
-// Contains css string
+// CSS Logic
 mod css;
 use css::Css;
 

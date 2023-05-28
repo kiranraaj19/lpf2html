@@ -10,6 +10,7 @@ pub struct LpfArgs {
     #[arg(short, long, value_name = "FILE",default_value= "index.html")]
     pub output_file: String,
     #[arg(short, long)]
+    /// Available values: Default
     pub css: String
 }
 
