@@ -1,6 +1,5 @@
 use maud::{html, PreEscaped};
 use pulldown_cmark::{html, Parser};
-pub struct Presentation(String); // HTML String
 
 #[derive(Debug, PartialEq)]
 pub struct Slide {
@@ -12,9 +11,13 @@ pub struct Slide {
     htmlstr: String,
 }
 
+// Contains css string
+mod css;
+use css::Css;
+
 #[derive(Debug, PartialEq)]
 pub struct VStack {
-    inner: Vec<VStackItem>,
+    inner: Vec<VStackItem>
 }
 
 // VSI
@@ -57,7 +60,7 @@ impl VStackItem {
 impl VStack {
     fn new(s: Vec<&str>) -> VStack {
         VStack {
-            inner: s.iter().map(|x| VStackItem::new(x)).collect(),
+            inner: s.iter().map(|x| VStackItem::new(x)).collect()
         }
     }
 
@@ -76,17 +79,20 @@ impl VStack {
         });
     }
 
-    fn render(&mut self) -> String {
+    fn render(&mut self, css: String) -> String {
         // Convert the VStack struct into final required html string
         println!("{}",self.inner.len());
         let slide_div = html! {
                 html {
+                    head { style { (Css::preset(css)) }}
                     body {
-                        div style="display: flex; flex-direction: column;" {
+                        div style="display: flex; flex-direction: column; height:100vh ;width: 100vw" {
                             @for v_div in &mut self.inner {
-                                div style="display: flex; flex-direction: row" {
+                                div style="display: flex; flex-direction: row; justify-content: space-around;" {
                                     @for h_div in &mut v_div.inner {
-                                        div width=(format!{"{}%",(h_div.div_width)}) { (h_div.content) }
+                                        div width=(format!{"{}vw",(h_div.div_width*100.00)}) style="justify-content:center" { 
+                                            (PreEscaped(md_to_html(&h_div.content))) 
+                                        }
                                     }
                                 }
                             }
@@ -103,6 +109,9 @@ fn md_to_html(s: &String) -> String {
     let parser = Parser::new(s);
 
     let mut html_output = String::new();
+
+    // Going through each line and checking if its a text, Html, or a line break.
+    // If its a line, then we check if its a Decorator, if So, we push required html
     html::push_html(&mut html_output, parser);
     html_output
 }
@@ -112,7 +121,7 @@ fn vstack_stringify(s: &str) -> Vec<&str> {
 }
 
 impl Slide {
-    pub fn new(s: &str) -> Slide {
+    pub fn new(s: &str, css: String) -> Slide {
         let binding = String::from(s);
         let items: Vec<&str> = binding.split("---").map(|item| item.trim()).collect();
         
@@ -123,7 +132,7 @@ impl Slide {
 
         // Render the slide with perfect width and content!
         Slide {
-            htmlstr: vstack.render(),
+            htmlstr: vstack.render(css),
         }
     }
 

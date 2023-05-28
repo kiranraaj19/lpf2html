@@ -16,7 +16,7 @@ fn main() {
     input_file.read_to_string(&mut content);
 
     // Create a new slide
-    let slide = Slide::new(&content);
+    let slide = Slide::new(&content, args.css);
     
     // Writing to output file
     let mut output_file = File::create(&args.output_file).unwrap();

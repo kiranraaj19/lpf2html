@@ -8,6 +8,10 @@ pub struct LpfArgs {
     pub input_file: String,
     /// Output file where .html should be written to
     #[arg(short, long, value_name = "FILE",default_value= "index.html")]
-    pub output_file: String
+    pub output_file: String,
+    #[arg(short, long)]
+    pub css: String
 }
+
+
 
